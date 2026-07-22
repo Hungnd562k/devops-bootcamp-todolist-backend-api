@@ -24,7 +24,7 @@ app.use(morgan('dev'));
 
 // Health check endpoint for Kubernetes liveness probe
 app.get('/health', (req: Request, res: Response) => {
-  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.status(200).json({ status: 'ok', message: 'Xin chào tôi tên Hưng', timestamp: new Date().toISOString() });
 });
 
 // Readiness check endpoint for Kubernetes readiness probe
@@ -83,9 +83,9 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`Health check: http://localhost:${PORT}/health`);
-      console.log(`Readiness check: http://localhost:${PORT}/ready`);
-      console.log(`API endpoint: http://localhost:${PORT}/api/todos`);
+      console.log(`Health check: http://127.0.0.1:${PORT}/health`);
+      console.log(`Readiness check: http://127.0.0.1:${PORT}/ready`);
+      console.log(`API endpoint: http://127.0.0.1:${PORT}/api/todos`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
