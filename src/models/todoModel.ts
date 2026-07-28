@@ -1,4 +1,5 @@
 import pool from '../config/database';
+import { logger } from '../config/logger';
 
 export interface Todo {
   id: number;
@@ -47,9 +48,9 @@ class TodoModel {
 
     try {
       await pool.query(query);
-      console.log('Database tables initialized successfully');
+      logger.info('Database tables initialized successfully', { log_type: 'database' });
     } catch (error) {
-      console.error('Error initializing database:', error);
+      logger.error('Error initializing database', error, { log_type: 'database' });
       throw error;
     }
   }

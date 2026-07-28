@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import morgan from 'morgan';
 import dotenv from 'dotenv';
 import todoRoutes from './routes/todoRoutes';
 import todoModel from './models/todoModel';
 import pool from './config/database';
+import { httpLogger, logger } from './config/logger';
 
 dotenv.config();
 
@@ -20,7 +20,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(morgan('dev'));
+app.use(httpLogger);
 
 // Health check endpoint for Kubernetes liveness probe
 app.get('/health', (req: Request, res: Response) => {
@@ -38,7 +38,7 @@ app.get('/ready', async (req: Request, res: Response) => {
       timestamp: new Date().toISOString() 
     });
   } catch (error) {
-    console.error('Readiness check failed:', error);
+    logger.error('Readiness check failed', error, { log_type: 'application' });
     res.status(503).json({ 
       status: 'not ready', 
       database: 'disconnected',
@@ -70,7 +70,11 @@ app.use((req: Request, res: Response) => {
 
 // Error handler
 app.use((err: Error, req: Request, res: Response, next: any) => {
-  console.error('Error:', err);
+  logger.error('Unhandled request error', err, {
+    log_type: 'application',
+    method: req.method,
+    path: req.path,
+  });
   res.status(500).json({ error: 'Internal server error' });
 });
 
@@ -81,14 +85,16 @@ const startServer = async () => {
     await todoModel.initDatabase();
     
     app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`Health check: http://127.0.0.1:${PORT}/health`);
-      console.log(`Readiness check: http://127.0.0.1:${PORT}/ready`);
-      console.log(`API endpoint: http://127.0.0.1:${PORT}/api/todos`);
+      logger.info('Server started', {
+        log_type: 'application',
+        port: Number(PORT),
+        health_endpoint: '/health',
+        readiness_endpoint: '/ready',
+        api_endpoint: '/api/todos',
+      });
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    logger.error('Failed to start server', error, { log_type: 'application' });
     process.exit(1);
   }
 };

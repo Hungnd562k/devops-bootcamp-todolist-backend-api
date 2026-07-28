@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import todoModel from '../models/todoModel';
+import { logger } from '../config/logger';
 
 class TodoController {
   async getAllTodos(req: Request, res: Response) {
@@ -20,7 +21,7 @@ class TodoController {
       const todos = await todoModel.getAllTodos(filters);
       res.json(todos);
     } catch (error) {
-      console.error('Error fetching todos:', error);
+      logger.error('Error fetching todos', error, { log_type: 'application', operation: 'get_all_todos' });
       res.status(500).json({ error: 'Failed to fetch todos' });
     }
   }
@@ -39,7 +40,7 @@ class TodoController {
 
       res.json(todo);
     } catch (error) {
-      console.error('Error fetching todo:', error);
+      logger.error('Error fetching todo', error, { log_type: 'application', operation: 'get_todo_by_id' });
       res.status(500).json({ error: 'Failed to fetch todo' });
     }
   }
@@ -65,7 +66,7 @@ class TodoController {
 
       res.status(201).json(todo);
     } catch (error) {
-      console.error('Error creating todo:', error);
+      logger.error('Error creating todo', error, { log_type: 'application', operation: 'create_todo' });
       res.status(500).json({ error: 'Failed to create todo' });
     }
   }
@@ -101,7 +102,7 @@ class TodoController {
 
       res.json(todo);
     } catch (error) {
-      console.error('Error updating todo:', error);
+      logger.error('Error updating todo', error, { log_type: 'application', operation: 'update_todo' });
       res.status(500).json({ error: 'Failed to update todo' });
     }
   }
@@ -120,7 +121,7 @@ class TodoController {
 
       res.json(todo);
     } catch (error) {
-      console.error('Error toggling todo:', error);
+      logger.error('Error toggling todo', error, { log_type: 'application', operation: 'toggle_todo' });
       res.status(500).json({ error: 'Failed to toggle todo' });
     }
   }
@@ -139,7 +140,7 @@ class TodoController {
 
       res.status(204).send();
     } catch (error) {
-      console.error('Error deleting todo:', error);
+      logger.error('Error deleting todo', error, { log_type: 'application', operation: 'delete_todo' });
       res.status(500).json({ error: 'Failed to delete todo' });
     }
   }
