@@ -24,7 +24,7 @@ app.use(morgan('dev'));
 
 // Health check endpoint for Kubernetes liveness probe
 app.get('/health', (req: Request, res: Response) => {
-  res.status(200).json({ status: 'ok', message: 'Update health message, test message', timestamp: new Date().toISOString() });
+  res.status(200).json({ status: 'ok', message: 'Api server is healthy', timestamp: new Date().toISOString() });
 });
 
 // Readiness check endpoint for Kubernetes readiness probe
